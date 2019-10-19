@@ -1,0 +1,16 @@
+<div class="search-wrapper">
+    <form class="form-group" [formGroup]="searchForm" (ngSubmit)="submitSearch()">
+        <div class="input-wrapper">
+            <mat-form-field style="min-width: 300px;">
+                <input matInput type="text" class="search-text" formControlName="query" name="query"
+                    (ngModelChange)="updateDropDown()" [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let option of dropdown" [value]="option">
+                        {{option}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <input type="submit" class="input-text" value="">
+        </div>
+    </form>
+</div>
