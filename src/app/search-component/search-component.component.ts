@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, Validators, FormControl, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -9,30 +9,63 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./search-component.component.scss']
 })
 export class SearchComponentComponent implements OnInit {
-  searchForm;
-  searchValue:string = '';
-  myControl = new FormControl();
-  dropdown:Array<string> = ['ekke', 'lolo', 'ohmy'];
+  private searchForm: FormGroup;
+  private dropdown: TextResult[] = [];
+
+  private searchResults: TextResult[] = [];
 
   constructor(
-    private formBuilder: FormBuilder,
     private router: Router,
     private http: HttpClient,
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.searchForm = this.formBuilder.group({
-      query: [''],
+    this.searchForm = new FormGroup({
+      query: new FormControl(),
     });
   }
 
   updateDropDown() {
-    //this.http.post('localhost:8082/find', {tokens: this.searchValue.split(' ')});
-    console.log()
+    if (this.searchForm.value.query.text != undefined) {
+      this.submitSearch();
+      return;
+    }
+
+    //this.http.post('localhost:8082/find', {tokens: this.searchForm.value.query.split(' '));
+
+    let results: TextResult[] = [
+      { id: 1, text: 'A' },
+      { id: 2, text: 'B' },
+      { id: 3, text: 'C' },
+      { id: 4, text: 'D' },
+      { id: 5, text: 'E' },
+      { id: 6, text: 'F' }];
+
+    this.dropdown = results.slice(0, 5);
   }
 
   submitSearch() {
-    this.router.navigate(['result'], { queryParams: { query: this.searchForm.value.query } });
+    if (this.searchForm.value.query.id != undefined) {
+      //this.http.get('localhost:8082/get/' + this.searchForm.value.query.id);
+      this.searchResults = [{ id: 2, text: 'B' }];
+    } else if (this.searchForm.value.query != "") {
+      //this.http.post('localhost:8082/find', {tokens: this.searchForm.value.query.split(' '));
+
+      this.searchResults = [
+        { id: 1, text: 'A' },
+        { id: 2, text: 'B' },
+        { id: 3, text: 'C' },
+        { id: 4, text: 'D' },
+        { id: 5, text: 'E' },
+        { id: 6, text: 'F' }];
+    }
+  }
+
+  displayFn(text: TextResult) {
+    if (text) { return text.text; }
   }
 }
 
+class TextResult {
+  constructor(public id: number, public text: string) { }
+}
