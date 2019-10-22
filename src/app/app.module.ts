@@ -11,6 +11,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SearchComponentComponent } from './search-component/search-component.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TextComponentComponent } from './text-component/text-component.component';
+
 
 
 
@@ -18,6 +20,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   declarations: [
     AppComponent,
     SearchComponentComponent,
+    TextComponentComponent,
   ],
   imports: [
     BrowserModule,
