@@ -5,12 +5,13 @@
     <form class="form-group" [formGroup]="searchForm" (ngSubmit)="submitSearch()">
         <div class="input-wrapper">
             <mat-form-field style="min-width: 300px;">
-                <input matInput type="text" class="search-text" formControlName="query"
-                    (ngModelChange)="updateDropDown()" [matAutocomplete]="auto">
+                <input matInput type="text" class="search-text" formControlName="query" [matAutocomplete]="auto">
                 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                    <mat-option *ngFor="let option of dropdown" [value]="option">
-                        {{option.text}}
-                    </mat-option>
+                    <ng-container *ngIf="!isLoading">
+                        <mat-option *ngFor="let option of dropdown" [value]="option">
+                            {{option.text}}
+                        </mat-option>
+                    </ng-container>
                 </mat-autocomplete>
             </mat-form-field>
             <input type="submit" class="input-text" value="">

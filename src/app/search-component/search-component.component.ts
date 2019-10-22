@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, Validators, FormControl, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { switchMap, debounceTime, tap, finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-search-component',
@@ -11,7 +13,7 @@ import { HttpClient } from '@angular/common/http';
 export class SearchComponentComponent implements OnInit {
   private searchForm: FormGroup;
   private dropdown: TextResult[] = [];
-
+  private isLoading: boolean = false;
   private searchResults: TextResult[] = [];
 
   constructor(
@@ -23,41 +25,66 @@ export class SearchComponentComponent implements OnInit {
     this.searchForm = new FormGroup({
       query: new FormControl(),
     });
+
+    this.searchForm
+      .get('query')
+      .valueChanges
+      .pipe(
+        debounceTime(300),
+        tap(() => this.isLoading = true),
+        switchMap(text => {
+          if (text.id) {
+            return this.searchById(text.id)
+              .pipe(
+                finalize(() => this.isLoading = false),
+              )
+          }
+          return this.searchByString(text)
+            .pipe(
+              finalize(() => this.isLoading = false),
+            )
+        }
+        )
+      )
+      .subscribe(texts => {
+        if (this.searchForm.value.query.id != undefined) {
+          this.searchResults = texts.result
+        } else {
+          this.dropdown = texts.result.slice(0, 5)
+        }
+      }
+      );
   }
 
-  updateDropDown() {
-    if (this.searchForm.value.query.text != undefined) {
-      this.submitSearch();
-      return;
-    }
+  searchByString(query: string): Observable<ITextResponse> {
+    return this.http.post('/api/find', { tokens: query.split(' ') })
+      .pipe(
+        tap((response: ITextResponse) => {
+          response.result = response.result
+            .map(text => new TextResult(text.id, text.text))
+          return response;
+        })
+      );
+  }
 
-    //this.http.post('localhost:8082/find', {tokens: this.searchForm.value.query.split(' '));
-
-    let results: TextResult[] = [
-      { id: 1, text: 'A' },
-      { id: 2, text: 'B' },
-      { id: 3, text: 'C' },
-      { id: 4, text: 'D' },
-      { id: 5, text: 'E' },
-      { id: 6, text: 'F' }];
-
-    this.dropdown = results.slice(0, 5);
+  searchById(id: number): Observable<ITextResponse> {
+    return this.http.get('/api/get/' + id)
+      .pipe(
+        tap((response: ITextResponse) => {
+          response.result = response.result
+            .map(text => new TextResult(text.id, text.text))
+          return response
+        })
+      );
   }
 
   submitSearch() {
     if (this.searchForm.value.query.id != undefined) {
-      //this.http.get('localhost:8082/get/' + this.searchForm.value.query.id);
-      this.searchResults = [{ id: 2, text: 'B' }];
+      return this.searchById(this.searchForm.value.query.id)
+        .subscribe(texts => this.searchResults = texts.result)
     } else if (this.searchForm.value.query != "") {
-      //this.http.post('localhost:8082/find', {tokens: this.searchForm.value.query.split(' '));
-
-      this.searchResults = [
-        { id: 1, text: 'A' },
-        { id: 2, text: 'B' },
-        { id: 3, text: 'C' },
-        { id: 4, text: 'D' },
-        { id: 5, text: 'E' },
-        { id: 6, text: 'F' }];
+      return this.searchByString(this.searchForm.value.query)
+        .subscribe(texts => this.searchResults = texts.result)
     }
   }
 
@@ -68,4 +95,7 @@ export class SearchComponentComponent implements OnInit {
 
 class TextResult {
   constructor(public id: number, public text: string) { }
+}
+interface ITextResponse {
+  result: TextResult[];
 }
