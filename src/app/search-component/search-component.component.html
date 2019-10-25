@@ -21,5 +21,7 @@
 
 <div class="results-wrapper">
     <mat-card *ngFor="let text of searchResults" [routerLink]="['/text']" [queryParams]="{id: text.id}">
-        {{text.text}}</mat-card>
+        <mat-card-title>Text #{{text.id}}</mat-card-title>
+        {{text.text}}
+    </mat-card>
 </div>

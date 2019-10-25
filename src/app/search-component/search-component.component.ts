@@ -30,7 +30,6 @@ export class SearchComponentComponent implements OnInit {
       .get('query')
       .valueChanges
       .pipe(
-        debounceTime(300),
         tap(() => this.isLoading = true),
         switchMap(text => {
           if (text.id) {
