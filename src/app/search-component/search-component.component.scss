@@ -5,7 +5,8 @@
   flex: 0;
 }
 
-h1{
+h1 {
+  padding-left: 30px;
   font-size: 50px;
   font-family:sans-serif;
   font-style: italic;
@@ -26,7 +27,7 @@ h1{
 
 .form-group{
   flex: 0;
- width: 300px;
+  width: 300px;
   height: 100px;
   margin: 10px auto;
 
@@ -39,7 +40,7 @@ h1{
 }
 
 .results-wrapper{
-  margin: 0 30px;
+  margin: 0 150px;
 }
 
 mat-card{
