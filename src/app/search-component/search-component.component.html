@@ -1,7 +1,5 @@
+<h1>Search</h1>
 <div class="search-wrapper">
-    <div class="search-page">
-        <h1>Search</h1>
-    </div>
     <form class="form-group" [formGroup]="searchForm" (ngSubmit)="submitSearch()">
         <div class="input-wrapper">
             <mat-form-field style="min-width: 300px;">
@@ -21,7 +19,7 @@
 
 <div class="results-wrapper">
     <mat-card *ngFor="let text of searchResults" [routerLink]="['/text']" [queryParams]="{id: text.id}">
-        <mat-card-title>Text #{{text.id}}</mat-card-title>
+        <mat-card-title class="text-title">Text #{{text.id}}</mat-card-title>
         {{text.text}}
     </mat-card>
 </div>
