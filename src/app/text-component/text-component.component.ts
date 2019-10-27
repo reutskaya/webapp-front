@@ -10,24 +10,28 @@ import { tap } from 'rxjs/operators';
   styleUrls: ['./text-component.component.scss']
 })
 export class TextComponentComponent implements OnInit {
-  private id: number = 0;
+  private id: number = undefined;
   private text: string = "";
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
   }
 
   ngOnInit() {
-    this.id = Number.parseInt(this.route.snapshot.queryParamMap.get('id'));
-    if (isNaN(this.id)) {
+    let id = Number.parseInt(this.route.snapshot.queryParamMap.get('id'));
+    if (isNaN(id)) {
       this.router.navigateByUrl('/404');
     } else {
-      this.searchById(this.id).subscribe(texts => {
+      this.searchById(id)
+      .subscribe(texts => {
         if (texts.result.length > 0) {
           this.text = texts.result[0].text;
+          this.id = texts.result[0].id;
         } else {
           this.router.navigateByUrl('/404');
         }
-      });
+      },
+      _ => this.router.navigateByUrl('/404')
+      );
     }
   }
 
