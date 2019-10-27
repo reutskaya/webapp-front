@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -13,12 +13,22 @@ export class TextComponentComponent implements OnInit {
   private id: number = 0;
   private text: string = "";
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) {
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
   }
 
   ngOnInit() {
     this.id = Number.parseInt(this.route.snapshot.queryParamMap.get('id'));
-    this.searchById(this.id).subscribe(texts => this.text = texts.result[0].text)
+    if (isNaN(this.id)) {
+      this.router.navigateByUrl('/404');
+    } else {
+      this.searchById(this.id).subscribe(texts => {
+        if (texts.result.length > 0) {
+          this.text = texts.result[0].text;
+        } else {
+          this.router.navigateByUrl('/404');
+        }
+      });
+    }
   }
 
   searchById(id: number): Observable<ITextResponse> {

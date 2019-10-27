@@ -12,6 +12,7 @@ import { AppComponent } from './app.component';
 import { SearchComponentComponent } from './search-component/search-component.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TextComponentComponent } from './text-component/text-component.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 
 
@@ -21,6 +22,7 @@ import { TextComponentComponent } from './text-component/text-component.componen
     AppComponent,
     SearchComponentComponent,
     TextComponentComponent,
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,

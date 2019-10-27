@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, Validators, FormControl, FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { switchMap, debounceTime, tap, finalize } from 'rxjs/operators';
 
 @Component({
@@ -37,22 +37,28 @@ export class SearchComponentComponent implements OnInit {
               .pipe(
                 finalize(() => this.isLoading = false),
               )
+          } else if (text !== '') {
+            return this.searchByString(text)
+              .pipe(
+                finalize(() => this.isLoading = false),
+              )
+          } else {
+            return of({result: []} as ITextResponse);
           }
-          return this.searchByString(text)
-            .pipe(
-              finalize(() => this.isLoading = false),
-            )
         }
         )
       )
       .subscribe(texts => {
-        if (this.searchForm.value.query.id != undefined) {
-          this.searchResults = texts.result
+        if (texts.result.length === 0){
+          this.dropdown = [];
+        } else if (this.searchForm.value.query.id != undefined) {
+          let tmp: TextResult = texts.result[0];
+          tmp.text = tmp.text.slice(0, 255) + ' ...'
+          this.searchResults = [tmp];
         } else {
           this.dropdown = texts.result.slice(0, 5)
         }
-      }
-      );
+      });
   }
 
   searchByString(query: string): Observable<ITextResponse> {
